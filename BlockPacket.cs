@@ -365,92 +365,48 @@ namespace DummyClass_For_Block {
 		/// </summary>
 		/// <returns></returns>
 		public PlayerIOClient.Message SerializeToSendableB() {
+			PlayerIOClient.Message build = PlayerIOClient.Message.Create("b");
+
+			build.Add(	IntForm(Layer),
+						IntForm(X),
+						IntForm(Y),
+						IntForm(BlockId));
+
 			switch (BlockType) {
 				case BlockIdentifier.Plain: {
-					return PlayerIOClient.Message.Create(
-						"b",
-						Layer,
-						X,
-						Y,
-						BlockId
-						);
-				}
+
+				} break;
 				case BlockIdentifier.NumberValue: {
-					return PlayerIOClient.Message.Create(
-						"b",
-						Layer,
-						X,
-						Y,
-						BlockId,
-						NumberValue
-						);
-				}
+					build.Add(IntForm(NumberValue));
+				} break;
 				case BlockIdentifier.Morphable: {
-					return PlayerIOClient.Message.Create(
-						"b",
-						Layer,
-						X,
-						Y,
-						BlockId,
-						MorphableValue
-						);
-				}
+					build.Add(IntForm(MorphableValue));
+				} break;
 				case BlockIdentifier.Sound: {
-					return PlayerIOClient.Message.Create(
-						"b",
-						Layer,
-						X,
-						Y,
-						BlockId,
-						SoundValue
-						);
-				}
+					build.Add(IntForm(SoundValue));
+				} break;
 				case BlockIdentifier.Label: {
-					return PlayerIOClient.Message.Create(
-						"lb",
-						Layer,
-						X,
-						Y,
-						BlockId,
-						LabelText,
-						LabelColor
-						);
-				}
+					build.Add(LabelText);
+					build.Add(LabelColor);
+				} break;
 				case BlockIdentifier.Portal: {
-					return PlayerIOClient.Message.Create(
-						"pt",
-						Layer,
-						X,
-						Y,
-						BlockId,
-						PortalRotation,
-						PortalId,
-						PortalTarget
-						);
-				}
+					build.Add(IntForm(PortalRotation));
+					build.Add(IntForm(PortalId));
+					build.Add(IntForm(PortalTarget));
+				} break;
 				case BlockIdentifier.Sign: {
-					return PlayerIOClient.Message.Create(
-						"b",
-						Layer,
-						X,
-						Y,
-						BlockId,
-						SignText,
-						SignType
-						);
-				}
+					build.Add(SignText);
+					build.Add(SignType);
+				} break;
 				case BlockIdentifier.WorldPortal: {
-					return PlayerIOClient.Message.Create(
-						"b",
-						Layer,
-						X,
-						Y,
-						BlockId,
-						WorldTarget
-						);
+					build.Add(WorldTarget);
+				} break;
+				default: {
+					throw new Exception("Invalid BlockIdentifier.");
 				}
 			}
-			throw new Exception("Invalid BlockIdentifier.");
+
+			return build;
 		}
 
 		/// <summary>
@@ -630,14 +586,111 @@ namespace DummyClass_For_Block {
 		/// <returns></returns>
 		public static bool IsValidEEBlockMessage(PlayerIOClient.Message e) {
 			var i = e.Type;
-			return i == "b" ||  //Plain
+			if (i == "b" ||  //Plain
 					i == "bc" || //Number value
 					i == "br" || //Morphable
 					i == "bs" || //Sound
 					i == "lb" || //Label
 					i == "pt" || //Portal
 					i == "ts" || //Sign
-					i == "wp";   //World Portal
+					i == "wp")   //World Portal
+
+				switch (e.Type) {
+					case "b": {
+						if (e.Count > 4)
+							if (e[0] is int &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is uint &&
+								e[4] is uint) {
+								return true;
+							}
+					} break;
+
+					case "bc": {
+						if (e.Count > 4)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is uint &&
+								e[4] is uint) {
+								return true;
+							}
+					} break;
+
+					case "br": {
+						if (e.Count > 5)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is uint &&
+								e[4] is int &&
+								e[5] is uint) {
+								return true;
+							}
+					} break;
+
+					case "bs": {
+						if (e.Count > 4)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is int &&
+								e[4] is uint) {
+								return true;
+							}
+					} break;
+
+					case "lb": {
+						if (e.Count > 5)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is int &&
+								e[3] is string &&
+								e[4] is string &&
+								e[5] is uint) {
+								return true;
+							}
+					} break;
+
+					case "pt": {
+						if (e.Count > 6)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is uint &&
+								e[4] is uint &&
+								e[5] is uint &&
+								e[6] is uint) {
+								return true;
+							}
+					} break;
+
+					case "ts": {
+						if (e.Count > 5)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is string &&
+								e[4] is uint &&
+								e[5] is uint) {
+								return true;
+							}
+					} break;
+
+					case "wp": {
+						if (e.Count > 4)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is string &&
+								e[4] is uint) {
+								return true;
+							}
+					} break;
+				}
+
+			return false;
 		}
 
 		/// <summary>
