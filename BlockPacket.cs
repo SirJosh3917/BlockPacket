@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DummyClass_For_Block {
+namespace SirJosh3917 {
 	/// <summary>
 	/// Up to the test for V 226
 	/// </summary>
