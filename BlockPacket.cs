@@ -367,7 +367,7 @@ namespace SirJosh3917 {
 		public PlayerIOClient.Message SerializeToSendableB() {
 			PlayerIOClient.Message build = PlayerIOClient.Message.Create("b");
 
-			build.Add(	IntForm(Layer),
+			build.Add(IntForm(Layer),
 						IntForm(X),
 						IntForm(Y),
 						IntForm(BlockId));
@@ -416,89 +416,28 @@ namespace SirJosh3917 {
 		public PlayerIOClient.Message SerializeToB() {
 			switch (BlockType) {
 				case BlockIdentifier.Plain: {
-					return PlayerIOClient.Message.Create(
-						"b",
-						IntForm(Layer),
-						X,
-						Y,
-						BlockId,
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("b", IntForm(Layer), X, Y, BlockId, PlayerId);
 				}
 				case BlockIdentifier.NumberValue: {
-					return PlayerIOClient.Message.Create(
-						"bc",
-						X,
-						Y,
-						BlockId,
-						NumberValue,
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("bc", X, Y, BlockId, NumberValue, PlayerId);
 				}
 				case BlockIdentifier.Morphable: {
-					return PlayerIOClient.Message.Create(
-						"br",
-						X,
-						Y,
-						BlockId,
-						MorphableValue,
-						IntForm(Layer),
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("br", X, Y, BlockId, MorphableValue, IntForm(Layer), PlayerId);
 				}
 				case BlockIdentifier.Sound: {
-					return PlayerIOClient.Message.Create(
-						"bs",
-						X,
-						Y,
-						BlockId,
-						IntForm(SoundValue),
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("bs", X, Y, BlockId, IntForm(SoundValue), PlayerId);
 				}
 				case BlockIdentifier.Label: {
-					return PlayerIOClient.Message.Create(
-						"lb",
-						X,
-						Y,
-						IntForm(BlockId),
-						LabelText,
-						LabelColor,
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("lb", X, Y, IntForm(BlockId), LabelText, LabelColor, PlayerId);
 				}
 				case BlockIdentifier.Portal: {
-					return PlayerIOClient.Message.Create(
-						"pt",
-						X,
-						Y,
-						BlockId,
-						PortalRotation,
-						PortalId,
-						PortalTarget,
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("pt", X, Y, BlockId, PortalRotation, PortalId, PortalTarget, PlayerId);
 				}
 				case BlockIdentifier.Sign: {
-					return PlayerIOClient.Message.Create(
-						"ts",
-						X,
-						Y,
-						BlockId,
-						SignText,
-						SignType,
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("ts", X, Y, BlockId, SignText, SignType, PlayerId);
 				}
 				case BlockIdentifier.WorldPortal: {
-					return PlayerIOClient.Message.Create(
-						"bs",
-						X,
-						Y,
-						BlockId,
-						WorldTarget,
-						PlayerId
-						);
+					return PlayerIOClient.Message.Create("bs", X, Y, BlockId, WorldTarget, PlayerId);
 				}
 			}
 			throw new Exception("Invalid BlockIdentifier.");
@@ -699,49 +638,49 @@ namespace SirJosh3917 {
 		/// <param name="e"></param>
 		/// <returns></returns>
 		public static bool IsValidCustomBlockMessage(PlayerIOClient.Message e) {
-			if(e.Type == "block")
-			if(e.Count > 5)
-				if (e[0] is uint && //valid base parameters
-					e[1] is uint &&
-					e[2] is uint &&
-					e[3] is uint &&
-					e[4] is uint &&
-					e[5] is uint) {
+			if (e.Type == "block")
+				if (e.Count > 5)
+					if (e[0] is uint && //valid base parameters
+						e[1] is uint &&
+						e[2] is uint &&
+						e[3] is uint &&
+						e[4] is uint &&
+						e[5] is uint) {
 
-					switch (e.GetUInt(5)) {
-						case 0: { //plain block
-							return true;
-						} break;
-						case 1:
-						case 2:
-						case 3: { //number value / morph / sound
-							if (e.Count > 6)
-								return e[6] is uint;
-						} break;
-						case 4: { // label
-							if (e.Count > 7)
-								return e[6] is string &&
-									e[7] is string;
-						} break;
-						case 5: { //portal
+						switch (e.GetUInt(5)) {
+							case 0: { //plain block
+								return true;
+							} break;
+							case 1:
+							case 2:
+							case 3: { //number value / morph / sound
+								if (e.Count > 6)
+									return e[6] is uint;
+							} break;
+							case 4: { // label
+								if (e.Count > 7)
+									return e[6] is string &&
+										e[7] is string;
+							} break;
+							case 5: { //portal
 
-							if (e.Count > 8)
-								return e[6] is uint &&
-									e[7] is uint &&
-									e[8] is uint;
-						} break;
-						case 6: { //sign
+								if (e.Count > 8)
+									return e[6] is uint &&
+										e[7] is uint &&
+										e[8] is uint;
+							} break;
+							case 6: { //sign
 
-							if (e.Count > 7)
-								return e[6] is string &&
-									e[7] is uint;
-						} break;
-						case 7: { //world portal
-							if (e.Count > 6)
-								return e[6] is string;
-						} break;
+								if (e.Count > 7)
+									return e[6] is string &&
+										e[7] is uint;
+							} break;
+							case 7: { //world portal
+								if (e.Count > 6)
+									return e[6] is string;
+							} break;
+						}
 					}
-				}
 
 			return false;
 		}
