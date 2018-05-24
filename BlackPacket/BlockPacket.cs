@@ -88,7 +88,7 @@ namespace SirJosh3917 {
 
 				this.NumberValue = numbervalue;
 				this.MorphableValue = morphvalue;
-				this.SoundValue = soundvalue;
+				this.SoundValue = (int)soundvalue; //lazy
 				this.LabelText = labeltext;
 				this.LabelColor = labelcolor;
 				this.PortalRotation = portalrotation;
@@ -130,7 +130,47 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
+
+				case "bn": {
+					if (e.Count > 7)
+						if (e[0] is uint &&
+							e[1] is uint &&
+							e[2] is uint &&
+							e[3] is string &&
+							e[4] is string &&
+							e[5] is string &&
+							e[6] is string &&
+							e[7] is uint) {
+							uint layer = 0;
+							uint x = e.GetUInt(0);
+							uint y = e.GetUInt(1);
+							uint blockId = e.GetUInt(2);
+							string npcName = e.GetString(3);
+							string npcChat1 = e.GetString(4);
+							string npcChat2 = e.GetString(5);
+							string npcChat3 = e.GetString(6);
+							uint playerId = e.GetUInt(7);
+
+							if (layer < 0) throw new Exception("Layer Integer is less than 0, not suitable for integer to uint conversion.");
+
+							this.PlayerId = playerId;
+							this.Layer = layer;
+							this.X = x;
+							this.Y = y;
+							this.BlockId = blockId;
+							this.BlockType = BlockIdentifier.NPC;
+
+							this.NPCName = npcName;
+							this.NPCChat1 = npcChat1;
+							this.NPCChat2 = npcChat2;
+							this.NPCChat3 = npcChat3;
+
+							Deserialized = true;
+						}
+				}
+				break;
 
 				case "bc": {
 					if (e.Count > 4)
@@ -159,7 +199,8 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
 
 				case "br": {
 					if (e.Count > 5)
@@ -189,7 +230,8 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
 
 				case "bs": {
 					if (e.Count > 4)
@@ -202,7 +244,7 @@ namespace SirJosh3917 {
 							uint x = e.GetUInt(0);
 							uint y = e.GetUInt(1);
 							uint blockId = e.GetUInt(2);
-							uint sound = e.GetUInt(3);
+							int sound = e.GetInt(3);
 							uint playerId = e.GetUInt(5);
 
 							if (layer < 0) throw new Exception("Layer Integer is less than 0, not suitable for integer to uint conversion.");
@@ -218,7 +260,8 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
 
 				case "lb": {
 					if (e.Count > 5)
@@ -251,7 +294,8 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
 
 				case "pt": {
 					if (e.Count > 6)
@@ -286,7 +330,8 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
 
 				case "ts": {
 					if (e.Count > 5)
@@ -318,7 +363,8 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
 
 				case "wp": {
 					if (e.Count > 4)
@@ -347,7 +393,8 @@ namespace SirJosh3917 {
 
 							Deserialized = true;
 						}
-				} break;
+				}
+				break;
 			}
 			#endregion
 		}
@@ -375,32 +422,47 @@ namespace SirJosh3917 {
 			switch (BlockType) {
 				case BlockIdentifier.Plain: {
 
-				} break;
+				}
+				break;
 				case BlockIdentifier.NumberValue: {
 					build.Add(IntForm(NumberValue));
-				} break;
+				}
+				break;
 				case BlockIdentifier.Morphable: {
 					build.Add(IntForm(MorphableValue));
-				} break;
+				}
+				break;
 				case BlockIdentifier.Sound: {
-					build.Add(IntForm(SoundValue));
-				} break;
+					build.Add(SoundValue);
+				}
+				break;
 				case BlockIdentifier.Label: {
 					build.Add(LabelText);
 					build.Add(LabelColor);
-				} break;
+				}
+				break;
 				case BlockIdentifier.Portal: {
 					build.Add(IntForm(PortalRotation));
 					build.Add(IntForm(PortalId));
 					build.Add(IntForm(PortalTarget));
-				} break;
+				}
+				break;
 				case BlockIdentifier.Sign: {
 					build.Add(SignText);
 					build.Add(SignType);
-				} break;
+				}
+				break;
 				case BlockIdentifier.WorldPortal: {
 					build.Add(WorldTarget);
-				} break;
+				}
+				break;
+				case BlockIdentifier.NPC: {
+					build.Add(NPCName);
+					build.Add(NPCChat1);
+					build.Add(NPCChat2);
+					build.Add(NPCChat3);
+				}
+				break;
 				default: {
 					throw new Exception("Invalid BlockIdentifier.");
 				}
@@ -418,6 +480,9 @@ namespace SirJosh3917 {
 				case BlockIdentifier.Plain: {
 					return PlayerIOClient.Message.Create("b", IntForm(Layer), X, Y, BlockId, PlayerId);
 				}
+				case BlockIdentifier.NPC: {
+					return PlayerIOClient.Message.Create("bn", X, Y, BlockId, NPCName, NPCChat1, NPCChat2, NPCChat3, PlayerId);
+				}
 				case BlockIdentifier.NumberValue: {
 					return PlayerIOClient.Message.Create("bc", X, Y, BlockId, NumberValue, PlayerId);
 				}
@@ -425,7 +490,7 @@ namespace SirJosh3917 {
 					return PlayerIOClient.Message.Create("br", X, Y, BlockId, MorphableValue, IntForm(Layer), PlayerId);
 				}
 				case BlockIdentifier.Sound: {
-					return PlayerIOClient.Message.Create("bs", X, Y, BlockId, IntForm(SoundValue), PlayerId);
+					return PlayerIOClient.Message.Create("bs", X, Y, BlockId, SoundValue, PlayerId);
 				}
 				case BlockIdentifier.Label: {
 					return PlayerIOClient.Message.Create("lb", X, Y, IntForm(BlockId), LabelText, LabelColor, PlayerId);
@@ -463,39 +528,55 @@ namespace SirJosh3917 {
 			switch (BlockType) {
 				case BlockIdentifier.Plain: {
 
-				} break;
+				}
+				break;
 
 				case BlockIdentifier.NumberValue: {
 					build.Add(this.NumberValue);
-				} break;
+				}
+				break;
 
 				case BlockIdentifier.Morphable: {
 					build.Add(this.MorphableValue);
-				} break;
+				}
+				break;
 
 				case BlockIdentifier.Sound: {
 					build.Add(this.SoundValue);
-				} break;
+				}
+				break;
 
 				case BlockIdentifier.Label: {
 					build.Add(this.LabelText);
 					build.Add(this.LabelColor);
-				} break;
+				}
+				break;
 
 				case BlockIdentifier.Portal: {
 					build.Add(this.PortalRotation);
 					build.Add(this.PortalId);
 					build.Add(this.PortalTarget);
-				} break;
+				}
+				break;
 
 				case BlockIdentifier.Sign: {
 					build.Add(this.SignText);
 					build.Add(this.SignType);
-				} break;
+				}
+				break;
 
 				case BlockIdentifier.WorldPortal: {
 					build.Add(this.WorldTarget);
-				} break;
+				}
+				break;
+
+				case BlockIdentifier.NPC: {
+					build.Add(this.NPCName);
+					build.Add(this.NPCChat1);
+					build.Add(this.NPCChat2);
+					build.Add(this.NPCChat3);
+				}
+				break;
 
 				default: {
 					throw new Exception("Undefined BlockIdentifier encountered.");
@@ -544,7 +625,8 @@ namespace SirJosh3917 {
 								e[4] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 
 					case "bc": {
 						if (e.Count > 4)
@@ -555,7 +637,8 @@ namespace SirJosh3917 {
 								e[4] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 
 					case "br": {
 						if (e.Count > 5)
@@ -567,7 +650,8 @@ namespace SirJosh3917 {
 								e[5] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 
 					case "bs": {
 						if (e.Count > 4)
@@ -578,7 +662,8 @@ namespace SirJosh3917 {
 								e[4] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 
 					case "lb": {
 						if (e.Count > 5)
@@ -590,7 +675,8 @@ namespace SirJosh3917 {
 								e[5] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 
 					case "pt": {
 						if (e.Count > 6)
@@ -603,7 +689,8 @@ namespace SirJosh3917 {
 								e[6] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 
 					case "ts": {
 						if (e.Count > 5)
@@ -615,7 +702,8 @@ namespace SirJosh3917 {
 								e[5] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 
 					case "wp": {
 						if (e.Count > 4)
@@ -626,7 +714,8 @@ namespace SirJosh3917 {
 								e[4] is uint) {
 								return true;
 							}
-					} break;
+					}
+					break;
 				}
 
 			return false;
@@ -650,35 +739,41 @@ namespace SirJosh3917 {
 						switch (e.GetUInt(5)) {
 							case 0: { //plain block
 								return true;
-							} break;
+							}
+							break;
 							case 1:
 							case 2:
 							case 3: { //number value / morph / sound
 								if (e.Count > 6)
 									return e[6] is uint;
-							} break;
+							}
+							break;
 							case 4: { // label
 								if (e.Count > 7)
 									return e[6] is string &&
 										e[7] is string;
-							} break;
+							}
+							break;
 							case 5: { //portal
 
 								if (e.Count > 8)
 									return e[6] is uint &&
 										e[7] is uint &&
 										e[8] is uint;
-							} break;
+							}
+							break;
 							case 6: { //sign
 
 								if (e.Count > 7)
 									return e[6] is string &&
 										e[7] is uint;
-							} break;
+							}
+							break;
 							case 7: { //world portal
 								if (e.Count > 6)
 									return e[6] is string;
-							} break;
+							}
+							break;
 						}
 					}
 
@@ -707,7 +802,7 @@ namespace SirJosh3917 {
 		public uint MorphableValue { get; set; }
 
 		//Sound
-		public uint SoundValue { get; set; }
+		public int SoundValue { get; set; }
 
 		//Label
 		public string LabelText { get; private set; }
@@ -724,6 +819,12 @@ namespace SirJosh3917 {
 
 		//WorldPortal
 		public string WorldTarget { get; private set; }
+
+		//NPC
+		public string NPCName { get; private set; }
+		public string NPCChat1 { get; private set; }
+		public string NPCChat2 { get; private set; }
+		public string NPCChat3 { get; private set; }
 		#endregion
 
 		public enum BlockIdentifier : uint {
@@ -734,7 +835,8 @@ namespace SirJosh3917 {
 			Label = 4,
 			Portal = 5,
 			Sign = 6,
-			WorldPortal = 7
+			WorldPortal = 7,
+			NPC = 8,
 		}
 		#endregion
 	}
