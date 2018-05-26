@@ -6,8 +6,7 @@ using System.Text;
 using Xunit;
 using Xunit.Categories;
 
-namespace BlockPacket.Tests {
-	public class BlockPacketTests {
+namespace BlockPacket.Tests {	public class BlockPacketTests {
 		public const uint Layer = 0;
 		public const int IntLayer = 0;
 		public const uint X = 9;
@@ -61,6 +60,55 @@ namespace BlockPacket.Tests {
 		public static readonly Message ts = Message.Create("ts", X, Y, SignId, SignText, SignType, PID);
 		public static readonly Message wp = Message.Create("wp", X, Y, WorldPortalId, WorldTarget, PID);
 
+		public static readonly Message placeb = Message.Create("b", IntLayer, (int)X, (int)Y, (int)Plain);
+		public static readonly Message placebc = Message.Create("b", IntLayer, (int)X, (int)Y, (int)NumberValue, (int)NumberValueValue);
+		public static readonly Message placebn = Message.Create("b", IntLayer, (int)X, (int)Y, (int)NPCId, NPCName, NPCChat1, NPCChat2, NPCChat3);
+		public static readonly Message placebr = Message.Create("b", IntLayer, (int)X, (int)Y, (int)Morphable, (int)MorphableValue);
+		public static readonly Message placebs = Message.Create("b", IntLayer, (int)X, (int)Y, (int)Sound, SoundValue);
+		public static readonly Message placelb = Message.Create("b", IntLayer, (int)X, (int)Y, Label, LabelText, LabelColor);
+		public static readonly Message placept = Message.Create("b", IntLayer, (int)X, (int)Y, (int)Portal, (int)PortalRotation, (int)PortalId, (int)PortalTarget);
+		public static readonly Message placets = Message.Create("b", IntLayer, (int)X, (int)Y, (int)SignId, SignText, (int)SignType);
+		public static readonly Message placewp = Message.Create("b", IntLayer, (int)X, (int)Y, (int)WorldPortalId, WorldTarget);
+
+		#region valid
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidB() => Assert.True(BlockPacket.IsValidEEBlockMessage(b), "Found 'b' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBC() => Assert.True(BlockPacket.IsValidEEBlockMessage(bc), "Found 'bc' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBN() => Assert.True(BlockPacket.IsValidEEBlockMessage(bn), "Found 'bn' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBR() => Assert.True(BlockPacket.IsValidEEBlockMessage(br), "Found 'br' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBS() => Assert.True(BlockPacket.IsValidEEBlockMessage(bs), "Found 'bs' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidLB() => Assert.True(BlockPacket.IsValidEEBlockMessage(lb), "Found 'lb' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidPT() => Assert.True(BlockPacket.IsValidEEBlockMessage(pt), "Found 'pt' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidTS() => Assert.True(BlockPacket.IsValidEEBlockMessage(ts), "Found 'ts' to be invalid.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidWP() => Assert.True(BlockPacket.IsValidEEBlockMessage(wp), "Found 'wp' to be invalid.");
+		#endregion
+
+		#region deserialize
 		[Fact]
 		[Category("BlockPacket")]
 		public void DeserializesB() {
@@ -156,6 +204,92 @@ namespace BlockPacket.Tests {
 			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.WorldPortal, "WorldPortal");
 			EnsureBasics(bp, true);
 			Assert.True(bp.WorldTarget == WorldTarget, $"bp.WorldTarget ({bp.WorldTarget}) != WorldTarget ({WorldTarget})");
+		}
+		#endregion
+
+		#region equals
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBtoB() => MessagesEqual(b, new BlockPacket(b).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBCtoB() => MessagesEqual(bc, new BlockPacket(bc).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBNtoB() => MessagesEqual(bn, new BlockPacket(bn).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBRtoB() => MessagesEqual(br, new BlockPacket(br).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBStoB() => MessagesEqual(bs, new BlockPacket(bs).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesLBtoB() => MessagesEqual(lb, new BlockPacket(lb).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesPTtoB() => MessagesEqual(pt, new BlockPacket(pt).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesTStoB() => MessagesEqual(ts, new BlockPacket(ts).SerializeToB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesWPtoB() => MessagesEqual(wp, new BlockPacket(wp).SerializeToB());
+		#endregion
+
+		#region sendable b
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBtoSendableB() => MessagesEqual(placeb, new BlockPacket(b).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBCtoSendableB() => MessagesEqual(placebc, new BlockPacket(bc).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBNtoSendableB() => MessagesEqual(placebn, new BlockPacket(bn).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBRtoSendableB() => MessagesEqual(placebr, new BlockPacket(br).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesBStoSendableB() => MessagesEqual(placebs, new BlockPacket(bs).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesLBtoSendableB() => MessagesEqual(placelb, new BlockPacket(lb).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesPTtoSendableB() => MessagesEqual(placept, new BlockPacket(pt).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesTStoSendableB() => MessagesEqual(placets, new BlockPacket(ts).SerializeToSendableB());
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void SerializesWPtoSendableB() => MessagesEqual(placewp, new BlockPacket(wp).SerializeToSendableB());
+		#endregion
+
+		private void MessagesEqual(Message main, Message comparing) {
+			Assert.True(main.Type == comparing.Type, $"main.Type ({main.Type}) != comparing.Type ({comparing.Type})");
+
+			for (uint i = 0; i < main.Count; i++) {
+				Assert.True(main[i].GetType().Equals(comparing[i].GetType()), $"m[{i}]'s type ({main[i].GetType()}) != comparing[{i}]'s type ({comparing[i].GetType()})");
+				Assert.True(main[i].Equals(comparing[i]), $"main[{i}] ({main[i]}) != comparing[{i}] ({comparing[i]})");
+			}
 		}
 
 		private void EnsureBasics(BlockPacket bp, bool checkLayer = false) {

@@ -449,7 +449,7 @@ namespace SirJosh3917 {
 				break;
 				case BlockIdentifier.Sign: {
 					build.Add(SignText);
-					build.Add(SignType);
+					build.Add(IntForm(SignType));
 				}
 				break;
 				case BlockIdentifier.WorldPortal: {
@@ -502,7 +502,7 @@ namespace SirJosh3917 {
 					return PlayerIOClient.Message.Create("ts", X, Y, BlockId, SignText, SignType, PlayerId);
 				}
 				case BlockIdentifier.WorldPortal: {
-					return PlayerIOClient.Message.Create("bs", X, Y, BlockId, WorldTarget, PlayerId);
+					return PlayerIOClient.Message.Create("wp", X, Y, BlockId, WorldTarget, PlayerId);
 				}
 			}
 			throw new Exception("Invalid BlockIdentifier.");
@@ -607,6 +607,7 @@ namespace SirJosh3917 {
 			var i = e.Type;
 			if (i == "b" ||  //Plain
 					i == "bc" || //Number value
+					i == "bn" || //NPC
 					i == "br" || //Morphable
 					i == "bs" || //Sound
 					i == "lb" || //Label
@@ -634,6 +635,21 @@ namespace SirJosh3917 {
 								e[2] is uint &&
 								e[3] is uint &&
 								e[4] is uint) {
+								return true;
+							}
+					}
+					break;
+
+					case "bn": {
+						if (e.Count > 7)
+							if (e[0] is uint &&
+								e[1] is uint &&
+								e[2] is uint &&
+								e[3] is string &&
+								e[4] is string &&
+								e[5] is string &&
+								e[6] is string &&
+								e[7] is uint) {
 								return true;
 							}
 					}
