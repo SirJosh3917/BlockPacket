@@ -6,7 +6,8 @@ using System.Text;
 using Xunit;
 using Xunit.Categories;
 
-namespace BlockPacket.Tests {	public class BlockPacketTests {
+namespace BlockPacket.Tests {
+	public class BlockPacketTests {
 		public const uint Layer = 0;
 		public const int IntLayer = 0;
 		public const uint X = 9;
@@ -69,6 +70,16 @@ namespace BlockPacket.Tests {	public class BlockPacketTests {
 		public static readonly Message placept = Message.Create("b", IntLayer, (int)X, (int)Y, (int)Portal, (int)PortalRotation, (int)PortalId, (int)PortalTarget);
 		public static readonly Message placets = Message.Create("b", IntLayer, (int)X, (int)Y, (int)SignId, SignText, (int)SignType);
 		public static readonly Message placewp = Message.Create("b", IntLayer, (int)X, (int)Y, (int)WorldPortalId, WorldTarget);
+
+		public static readonly Message block_b = Message.Create("block", PID, Layer, X, Y, Plain, (uint)BlockPacket.BlockIdentifier.Plain);
+		public static readonly Message block_bc = Message.Create("block", PID, Layer, X, Y, NumberValue, (uint)BlockPacket.BlockIdentifier.NumberValue, NumberValueValue);
+		public static readonly Message block_bn = Message.Create("block", PID, Layer, X, Y, NPCId, (uint)BlockPacket.BlockIdentifier.NPC, NPCName, NPCChat1, NPCChat2, NPCChat3);
+		public static readonly Message block_br = Message.Create("block", PID, Layer, X, Y, Morphable, (uint)BlockPacket.BlockIdentifier.Morphable, MorphableValue);
+		public static readonly Message block_bs = Message.Create("block", PID, Layer, X, Y, Sound, (uint)BlockPacket.BlockIdentifier.Sound, (uint)SoundValue);
+		public static readonly Message block_lb = Message.Create("block", PID, Layer, X, Y, (uint)Label, (uint)BlockPacket.BlockIdentifier.Label, LabelText, LabelColor);
+		public static readonly Message block_pt = Message.Create("block", PID, Layer, X, Y, Portal, (uint)BlockPacket.BlockIdentifier.Portal, PortalRotation, PortalId, PortalTarget);
+		public static readonly Message block_ts = Message.Create("block", PID, Layer, X, Y, SignId, (uint)BlockPacket.BlockIdentifier.Sign, SignText, SignType);
+		public static readonly Message block_wp = Message.Create("block", PID, Layer, X, Y, WorldPortalId, (uint)BlockPacket.BlockIdentifier.WorldPortal, WorldTarget);
 
 		#region valid
 		[Fact]
@@ -281,6 +292,143 @@ namespace BlockPacket.Tests {	public class BlockPacketTests {
 		[Fact]
 		[Category("BlockPacket")]
 		public void SerializesWPtoSendableB() => MessagesEqual(placewp, new BlockPacket(wp).SerializeToSendableB());
+		#endregion
+
+		#region valid blockpackets
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_B() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_b), $"block_b was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_BC() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_bc), $"block_bc was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_BN() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_bn), $"block_bn was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_BR() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_br), $"block_br was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_BS() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_bs), $"block_bs was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_LB() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_lb), $"block_lb was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_PT() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_pt), $"block_pt was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_TS() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_ts), $"block_ts was deemed an invalid custom block message.");
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void ValidBlockPacket_WP() => Assert.True(BlockPacket.IsValidCustomBlockMessage(block_wp), $"block_wp was deemed an invalid custom block message.");
+		#endregion
+
+		#region verifying 'block' is fine
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_B() {
+			var bp = new BlockPacket(block_b);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.Plain, "Plain");
+			EnsureBasics(bp, true);
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_BC() {
+			var bp = new BlockPacket(block_bc);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.NumberValue, "NumberValue");
+			EnsureBasics(bp, true);
+			Assert.True(bp.NumberValue == NumberValueValue, $"bp.NumberValue ({bp.NumberValue}) != NumberValueValue ({NumberValueValue})");
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_BN() {
+			var bp = new BlockPacket(block_bn);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.NPC, "NPC");
+			EnsureBasics(bp, true);
+			Assert.True(bp.NPCName == NPCName, $"bp.NPCName ({bp.NPCName}) != NPCName ({NPCName})");
+			Assert.True(bp.NPCChat1 == NPCChat1, $"bp.NPCChat1 ({bp.NPCChat1}) != NPCChat1 ({NPCChat1})");
+			Assert.True(bp.NPCChat2 == NPCChat2, $"bp.NPCChat2 ({bp.NPCChat2}) != NPCChat2 ({NPCChat2})");
+			Assert.True(bp.NPCChat3 == NPCChat3, $"bp.NPCChat3 ({bp.NPCChat3}) != NPCChat3 ({NPCChat3})");
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_BR() {
+			var bp = new BlockPacket(block_br);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.Morphable, "Morphable");
+			EnsureBasics(bp, true);
+			Assert.True(bp.MorphableValue == MorphableValue, $"bp.MorphableValue ({bp.MorphableValue}) != MorphableValue ({MorphableValue})");
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_BS() {
+			var bp = new BlockPacket(block_bs);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.Sound, "Sound");
+			EnsureBasics(bp, true);
+			Assert.True(bp.SoundValue == SoundValue, $"bp.SoundValue ({bp.SoundValue}) != SoundValue ({SoundValue})");
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_LB() {
+			var bp = new BlockPacket(block_lb);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.Label, "Label");
+			EnsureBasics(bp, true);
+			Assert.True(bp.LabelText == LabelText, $"bp.LabelText ({bp.LabelText}) != LabelText ({LabelText})");
+			Assert.True(bp.LabelColor == LabelColor, $"bp.LabelColor ({bp.LabelColor}) != LabelColor ({LabelColor})");
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_PT() {
+			var bp = new BlockPacket(block_pt);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.Portal, "Portal");
+			EnsureBasics(bp, true);
+			Assert.True(bp.PortalId == PortalId, $"bp.PortalId ({bp.PortalId}) != PortalId ({PortalId})");
+			Assert.True(bp.PortalRotation == PortalRotation, $"bp.PortalRotation ({bp.PortalRotation}) != PortalRotation ({PortalRotation})");
+			Assert.True(bp.PortalTarget == PortalTarget, $"bp.PortalTarget ({bp.PortalTarget}) != PortalTarget ({PortalTarget})");
+			//Assert.True(bp. == , $"bp. ({bp.}) !=  ({})");
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_TS() {
+			var bp = new BlockPacket(block_ts);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.Sign, "Sign");
+			EnsureBasics(bp, true);
+			Assert.True(bp.SignText == SignText, $"bp.SignText ({bp.SignText}) != SignText ({SignText})");
+			Assert.True(bp.SignType == SignType, $"bp.SignType ({bp.SignType}) != SignType ({SignType})");
+		}
+
+		[Fact]
+		[Category("BlockPacket")]
+		public void BlockPacket_WP() {
+			var bp = new BlockPacket(block_wp);
+
+			TypeBlockPacket(bp, BlockPacket.BlockIdentifier.WorldPortal, "WorldPortal");
+			EnsureBasics(bp, true);
+			Assert.True(bp.WorldTarget == WorldTarget, $"bp.WorldTarget ({bp.WorldTarget}) != WorldTarget ({WorldTarget})");
+		}
 		#endregion
 
 		private void MessagesEqual(Message main, Message comparing) {

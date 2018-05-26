@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SirJosh3917 {
 	/// <summary>
-	/// Up to the test for V 226
+	/// Up to the test for V 232
 	/// </summary>
 	public class BlockPacket {
 		/// <summary>
@@ -23,11 +23,12 @@ namespace SirJosh3917 {
 		/// </summary>
 		/// <param name="e"></param>
 		public BlockPacket(PlayerIOClient.Message e) {
-			Deserialized = false;
+			this.Deserialized = false;
 
 			#region Deserialize 'block'
 			if (IsValidCustomBlockMessage(e)) {
 				//We're recieving back one of our special packets!
+				//remember: we don't need to check each type ( e.g. if( e[0] is uint ) ) because IsValidCustomBlockMessage(e) covered that for us
 
 				uint playerid = e.GetUInt(0);
 				uint layer = e.GetUInt(1);
@@ -36,7 +37,7 @@ namespace SirJosh3917 {
 				uint blockid = e.GetUInt(4);
 				uint blocktype = e.GetUInt(5);
 				uint numbervalue = 0, morphvalue = 0, soundvalue = 0, portalrotation = 0, portalid = 0, portaltarget = 0, signtype = 0;
-				string labeltext = "", labelcolor = "", signtext = "", worldtarget = "";
+				string labeltext = "", labelcolor = "", signtext = "", worldtarget = "", npcname = "", npcchat1 = "", npcchat2 = "", npcchat3 = "";
 
 				if (!Enum.IsDefined(typeof(BlockIdentifier), (uint)BlockType))
 					throw new Exception("Invalid unigned integer used for enum.");
@@ -50,7 +51,7 @@ namespace SirJosh3917 {
 
 				switch (blocktype) {
 					case 0: { //plain block
-						return;
+						break;
 					}
 					case 1: {
 						numbervalue = e.GetUInt(6);
@@ -84,6 +85,12 @@ namespace SirJosh3917 {
 						worldtarget = e.GetString(6);
 						break;
 					}
+					case 8: {
+						npcname = e.GetString(6);
+						npcchat1 = e.GetString(7);
+						npcchat2 = e.GetString(8);
+						npcchat3 = e.GetString(9);
+					} break;
 				}
 
 				this.NumberValue = numbervalue;
@@ -97,8 +104,12 @@ namespace SirJosh3917 {
 				this.SignText = signtext;
 				this.SignType = signtype;
 				this.WorldTarget = worldtarget;
+				this.NPCName = npcname;
+				this.NPCChat1 = npcchat1;
+				this.NPCChat2 = npcchat2;
+				this.NPCChat3 = npcchat3;
 
-				Deserialized = true;
+				this.Deserialized = true;
 
 				return;
 			}
@@ -789,6 +800,13 @@ namespace SirJosh3917 {
 									return e[6] is string;
 							}
 							break;
+							case 8: { //npc
+								if(e.Count > 9)
+									return e[6] is string &&
+									e[7] is string &&
+									e[8] is string &&
+									e[9] is string;
+							} break;
 						}
 					}
 
