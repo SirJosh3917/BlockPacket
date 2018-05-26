@@ -575,8 +575,7 @@ namespace SirJosh3917 {
 					build.Add(this.NPCChat1);
 					build.Add(this.NPCChat2);
 					build.Add(this.NPCChat3);
-				}
-				break;
+				} break;
 
 				default: {
 					throw new Exception("Undefined BlockIdentifier encountered.");
