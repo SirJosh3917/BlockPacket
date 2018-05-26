@@ -245,7 +245,7 @@ namespace SirJosh3917 {
 							uint y = e.GetUInt(1);
 							uint blockId = e.GetUInt(2);
 							int sound = e.GetInt(3);
-							uint playerId = e.GetUInt(5);
+							uint playerId = e.GetUInt(4);
 
 							if (layer < 0) throw new Exception("Layer Integer is less than 0, not suitable for integer to uint conversion.");
 
